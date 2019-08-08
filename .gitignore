@@ -4,7 +4,7 @@
 /node_modules
 /backend/node_modules
 /frontend/node_modules
-/mobile/node_modules
+/tindev/node_modules
 /.pnp
 .pnp.js
 
