@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
+import io from 'socket.io-client';
 
 import './Main.css';
 
 import logo from "../assets/logo.svg";
 import like from "../assets/like.svg";
 import dislike from "../assets/dislike.svg";
+import istamatch from '../assets/itsamatch.png';
 
 export default function Main({match}) {
 
   const [users, setUsers] = useState([]);
+  const [matchDev, setMatchDev] = useState(null);
 
   useEffect( () => { 
     async function loadUsers() {
@@ -23,6 +26,21 @@ export default function Main({match}) {
     }
     loadUsers();
   }, [match.params.id]); // Ao alterar esse ID, chama essa função
+
+  useEffect( () => {
+    const socket = io('http://localhost:3333', {
+      query: { user: match.params.id}
+    });
+    
+    /*  socket.emit('hello', {
+        message: "Hello World!"
+      }) */
+
+    socket.on('match', dev => {
+      setMatchDev(dev);
+    });
+    
+  }, [match.params.id]);
 
   async function handleDislike(id) {
     await api.post(`/devs/${id}/dislikes`, null, {
@@ -71,6 +89,20 @@ export default function Main({match}) {
         )
       }
       
+      { matchDev && (
+        <div className="match-container">
+          <img src={istamatch} alt="It's a Match" className="itsamatch" />
+          
+          <img src={matchDev.avatar} alt="avatar" className="avatar" />
+          <strong>{matchDev.name}</strong>
+          <p>{matchDev.bio}</p>
+
+          <button type="button" onClick={ () => setMatchDev(null) }>
+            Fechar
+          </button>
+        </div>
+      ) }
+
     </div>
   )
 }

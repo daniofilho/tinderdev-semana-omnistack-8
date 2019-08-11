@@ -28,14 +28,16 @@ export default function Login ( { navigation }) {
   }, []);
 
   async function handleSubmit() {
+    try {
+      const response = await api.post('/devs', { username: user });
+      const { _id } = response.data;
+      
+      await AsyncStorage.setItem('user', _id);
 
-    const response = await api.post('/devs', { username: user });
-    
-    const { _id } = response.data;
-
-    await AsyncStorage.setItem('user', _id);
-
-    navigation.navigate('Main', { user: _id });
+      navigation.navigate('Main', { user: _id });
+    } catch (error) {
+      console.log(error);
+    }
   }
   
   return (

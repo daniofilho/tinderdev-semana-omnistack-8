@@ -19,7 +19,16 @@ module.exports = {
 
     // Verifica se ambos deram like para mostrar "match" na tela
     if( targetDev.likes.includes(loggedDev._id) ) {
-      console.log('Match!');
+      const loggedSocket = req.connectedUsers[user];
+      const targetSocket = req.connectedUsers[devID];
+
+      if( loggedSocket ) {
+        req.io.to( loggedSocket ).emit('match', targetDev); // avisa usuário logado que deu match
+      }
+
+      if( targetSocket ) {
+        req.io.to( targetSocket ).emit('match', loggedDev); // avisa o alvo do like que rolou match
+      }
     }
 
     // Salva o ID do target dentro da tabela de likes do usuário atual
